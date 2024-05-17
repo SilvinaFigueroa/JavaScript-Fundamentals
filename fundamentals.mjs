@@ -8,11 +8,11 @@ import * as functions from "./functions.mjs";
 
 let result = [];
 getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions)
-
+console.log(LearnerSubmissions.length)
 function getLearnerData(course, assigGroup, learnerSub) {
     for (let i in learnerSub) {
-        console.log(result)
         // Learner Submission
+        console.log(LearnerSubmissions[i].learner_id)
         let learnerId = learnerSub[i].learner_id
         let submissionId = learnerSub[i].assignment_id
         let score = learnerSub[i].submission.score
@@ -20,19 +20,29 @@ function getLearnerData(course, assigGroup, learnerSub) {
 
         let scorePercentage = (getAssignment(course, submissionId, score, submDate, assigGroup))
        
+
+        result.map(learner => learnerId).filter((value, index, self) => self.indexOf(value) === index)
+
+        //TODO: REPLACE THE FOR LOOP WITH A FILTER!! 
+
         // if array of result is 0 (first element)
-        if(result.length == 0){
+        if(result.length === 0){
             result.push({ "id": learnerId, [`<${submissionId}>`]: scorePercentage })
+            console.log(`Create ${learnerId} score ${scorePercentage}`)
         }
 
         else{ // check if the object extist on the result array
             for (let j = 0; j < result.length; j++) {
                 if (result[j].id === learnerId) {
                     result[j][`<${submissionId}>`] = scorePercentage
+                    console.log(`Update ${learnerId} score ${scorePercentage}`)
+                                       
                 }
                 else {
                     // if the leaner ID is not already part of the results
                     result.push({ "id": learnerId, [`<${submissionId}>`]: scorePercentage })
+                    console.log(`Create ${learnerId} score ${scorePercentage}`)
+                    
                 }
             }
         }
@@ -97,20 +107,3 @@ function assigInfo(group, assignmentId) {
         }
     }
 }
-
-
-
-
-
-
-        // // Get the unique ID for students to create our array of objects
-        // // When looping, if the student ID exits we add the exam submitted, if does not exist, the object will be created
-        // let uniqueLearners = learnerSub.map(learner => learner.learner_id).filter((value, index, self) => self.indexOf(value) === index)
-        // console.log(`uniqueLearners ${uniqueLearners}`)
-        // //Use the uniqueLearners array to check if we need to create a new object for the studentId
-        // // // or update a current object 
-        // // for (let i = 0; 0 < uniqueLearners.length; i++) {
-        // //     if (learnerId == uniqueLearners[i]) {
-
-        // //     } else {
-        // //         // Update the existing learner object adding the submission
