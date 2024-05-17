@@ -8,37 +8,56 @@ import { CourseInfo, AssignmentGroup, LearnerSubmissions } from "./data.mjs"
 
 getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions)
 
-function getLearnerData(course, assig, learnerSub) {
+let result = [];
+
+function getLearnerData(course, assigGroup, learnerSub) {
+    // Get the unique ID for students to create our array of objects
+    // When looping, if the student ID exits we add the exam submitted, if does not exist, the object will be created
+    let uniqueLearners = learnerSub.map(learner => learner.learner_id).filter((value, index, self) => self.indexOf(value) === index)
 
     for (let i in learnerSub) {
-        let learner_id = learnerSub[i].learner_id
-        let assignment_id = learnerSub[i].assignment_id
-        let submitted = learnerSub.submission
-        let dateSubmission = learnerSub[i].submission.dateSubmission;
-        let score = learnerSub[i].submission.score;
+        let learnerId = learnerSub[i].learner_id
+        let submissionId = learnerSub[i].assignment_id
+        let score = learnerSub[i].score
+        let submDate = learnerSub[i].submitted_at
 
-        console.log(assignmentInfo(assignment_id))
-        
+        let assigValidation = validateAssigment(course,submissionId,assigGroup)
+        getAssigment(score,submDate,submissionId,assigGroup)
+
+
+        //Use the uniqueLearners array to check if we need to create a new object for the studentId
+        // or update a current object 
+        // for (let i = 0; 0 < uniqueLearners.length; i++) {
+        //     if (learnerId == i) {
+        //         // add submission to object    
+        //     } else { `create object` }
+
+        //     if(assigValidation){
+        //         getAssigment(learnerId,)
+
+        //     }
+        // }
+
+
     }
 }
 
-// Get the assigment due date and points possible
-function assignmentInfo(assig) {
-    let dueDate = "";
-    let points= 0;
-    AssignmentGroup.assignments.forEach(element => {
-        // console.log(`${element.id} & ${assig}`) //validation
-        if (element.id === assig) {
-            dueDate = element.due_at
-            points = element.points_possible
-        }
-       
-    })
+function validateAssigment(course, submissionId, group) {
+    //validate if the assigment belongs to the course
+    // some method: check if at least one element check the condition
+    const hasSubmission = group.assignments.some(assignment => assignment.id === submissionId)
+    return (hasSubmission && (course.id === group.course_id)) ? true : false;
+}
 
-    return [dueDate, points]
-};
+function getAssigment(score,submDate,submissionId,group){
 
+        let dueAt = group.assignments.su
+        let pointMax = group.assignments[submissionId].points_possible
+
+        console.log(dueAt)
+        console.log(pointMax)
 
 
 
 
+}
