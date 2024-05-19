@@ -6,53 +6,53 @@ import * as functions from "./functions.mjs";
 // in the order listed: (CourseInfo, AssignmentGroup, [LearnerSubmission]), 
 // and returns the formatted result
 
-let result = [];
+
+let assigmentInfo = [];
 getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions)
-console.log(LearnerSubmissions.length)
+
 function getLearnerData(course, assigGroup, learnerSub) {
+    let result = [];
+    // Create an array with the info needed for later calculate the learner’s total, weighted average
+
     for (let i in learnerSub) {
         // Learner Submission
-        console.log(LearnerSubmissions[i].learner_id)
         let learnerId = learnerSub[i].learner_id
         let submissionId = learnerSub[i].assignment_id
         let score = learnerSub[i].submission.score
         let submDate = learnerSub[i].submission.submitted_at
 
         let scorePercentage = (getAssignment(course, submissionId, score, submDate, assigGroup))
-       
+        let submissionInfo = assigInfo(assigGroup, submissionId)
+        let maxPoint = submissionInfo[1];
 
-        result.map(learner => learnerId).filter((value, index, self) => self.indexOf(value) === index)
-
-        //TODO: REPLACE THE FOR LOOP WITH A FILTER!! 
+        let avgScore = [+score,maxPoint]
 
         // if array of result is 0 (first element)
-        if(result.length === 0){
-            result.push({ "id": learnerId, [`<${submissionId}>`]: scorePercentage })
-            console.log(`Create ${learnerId} score ${scorePercentage}`)
+        if (result.length === 0) {
+            result.push({ "id": learnerId, "avg" : avgScore, [`<${submissionId}>`]: scorePercentage })
         }
 
-        else{ // check if the object extist on the result array
-            for (let j = 0; j < result.length; j++) {
-                if (result[j].id === learnerId) {
-                    result[j][`<${submissionId}>`] = scorePercentage
-                    console.log(`Update ${learnerId} score ${scorePercentage}`)
-                                       
-                }
-                else {
-                    // if the leaner ID is not already part of the results
-                    result.push({ "id": learnerId, [`<${submissionId}>`]: scorePercentage })
-                    console.log(`Create ${learnerId} score ${scorePercentage}`)
-                    
-                }
+        else { // check if the object extist on the result array
+
+            // Find if an object with the same 'id' in array "result"
+            const findLearner = result.find(learner => learner.id === learnerId);
+
+            if (findLearner) {
+                findLearner.avg[0] += +avgScore[0];
+                findLearner.avg[1] += +avgScore[1];
+                findLearner[`<${submissionId}>`] = scorePercentage
+            }
+            else {
+                // if the leaner ID is not already part of the results
+                result.push({ "id": learnerId, "avg" : avgScore, [`<${submissionId}>`]: scorePercentage })
+
             }
         }
-
     }
+    getAvgScore(result)
     console.log(result)
 
 }
-
-
 
 
 
@@ -107,3 +107,13 @@ function assigInfo(group, assignmentId) {
         }
     }
 }
+
+function getAvgScore(result){
+
+    result.forEach(obj => {
+    let avg = ((obj.avg[0] / obj.avg[1])*100).toFixed();
+    obj.avg = `${avg}%`;
+
+    });
+}
+
